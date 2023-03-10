@@ -15,8 +15,7 @@ def shuffle_symmetric(B):
     p=corrected_middle
     for i in range(corrected_middle//2+1):
         for j in range(i, p):
-            if i!=j and i+j!=corrected_middle-1:
-                change_B[i][j], change_B[p-1][j]= change_B[p-1][j], change_B[i][j]
+            change_B[i][j], change_B[p-1][j]= change_B[p-1][j], change_B[i][j]
         p=p-1
     return change_B
 #формируем матрицу F учитывая, какое из заданных условий выполнилось. В параметры передаем подматрицы
