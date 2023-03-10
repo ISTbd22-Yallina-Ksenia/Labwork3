@@ -48,7 +48,7 @@ def printMatrix(matrix, count): #Вывод матрицы на экран
         print()
 import random
 K = int(input("Введите K="))
-N = int(input("Введите N, большее или равное 5 "))
+N = int(input("Введите целое N, большее или равное 5 "))
 matrix_A=[ [random.randint(-10, 10) for j in range(N)] for i in range(N)]
 print("Матрица A")
 printMatrix(matrix_A, N)
