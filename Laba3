@@ -1,0 +1,103 @@
+#Вид матрицы A:
+#E B
+#D C
+#Вид подматрицы:
+#     1
+# 4       2  
+#     3
+def shuffle_symmetric(B):
+    #если выполняется условие для подматрицы C, то в подматрице B области 1 и 3 меняем местами
+    change_B=[[B[i][j] for j in range(corrected_middle)] for i in range(corrected_middle)]
+    p=corrected_middle
+    for i in range(corrected_middle//2+1):
+        for j in range(i, p):
+            if i!=j and i+j!=corrected_middle-1:
+                change_B[i][j], change_B[p-1][j]= change_B[p-1][j], change_B[i][j]
+        p=p-1
+    return change_B
+#формируем матрицу F учитывая, какое из заданных условий выполнилось. В параметры передаем подматрицы
+def create_matrix_f(first, second, third, fourth):
+    matrix_F = []
+    corrected_n = N if isEven else N + 1
+    for row_num in range(corrected_n):
+        row_tmp = []
+        for column_num in range(corrected_n):
+            if row_num < corrected_middle:
+                if column_num < corrected_middle:
+                    row_tmp.append(first[row_num][column_num])
+                else:
+                    if isEven or column_num-corrected_middle!=0:
+                        row_tmp.append(second[row_num][column_num-corrected_middle])
+            elif isEven or row_num-corrected_middle!=0:
+                if column_num < corrected_middle:
+                    row_tmp.append(third[row_num-corrected_middle][column_num])
+                else:
+                    if isEven or column_num-corrected_middle!=0:
+                        row_tmp.append(fourth[row_num-corrected_middle][column_num - corrected_middle])
+        if len(row_tmp)>0:
+            matrix_F.append(row_tmp)
+    return matrix_F
+def printMatrix(matrix, count): #Вывод матрицы на экран
+    for i in matrix:
+        for j in i:
+            print(f"{j:>4}", end='')
+        print()
+import random
+K = int(input("Введите K="))
+N = int(input("Введите N, большее или равное 5 "))
+matrix_A=[ [random.randint(-10, 10) for j in range(N)] for i in range(N)]
+print("Матрица A")
+printMatrix(matrix_A, N)
+isEven = True if N%2==0 else False #Проверка порядка матрицы на четность
+middle = N // 2 #Порядок подматриц
+#Если матрица A имеет четный порядок - граница подматриц четкая и не пересекается, иначе входит в обе подматрицы
+corrected_middle = middle if isEven else middle + 1
+#Формируем подматрицы
+matrix_B=[[matrix_A[i][j] for j in range(middle,N)] for i in range(corrected_middle)]
+matrix_E=[[matrix_A[i][j] for j in range(corrected_middle)] for i in range(corrected_middle)]
+matrix_D=[[matrix_A[i][j] for j in range(corrected_middle)] for i in range(middle,N)]
+matrix_C=[[matrix_A[i][j] for j in range(middle,N)] for i in range(middle,N)]
+nch=0 #Счетчик количества нулей в нечетных столбцах области 2 подматрицы C
+#Поиск количества нулей в нечетных столбцах области 2 подматрицы C
+for i in range(corrected_middle-1, -1, -1): #Для удобства начинаем обработку с последних строк и столбцов
+    for j in range(corrected_middle-1,-1, -1):
+        if i<=j:
+            if j%2!=0 and str(matrix_C[i][j]).__contains__('0'):
+                nch=nch+1
+            if i+j==corrected_middle-1:
+                break
+summa=0 #Сумма чисел по периметру области 4 подматрицы C
+for i in range(corrected_middle): #Ищем сумму чисел по периметру области 4 подматрицы С
+    for j in range(corrected_middle):
+        if i==j and j<=(corrected_middle-1)//2:
+            summa+=matrix_C[i][j]
+        elif i+j==corrected_middle-1 and j<=(corrected_middle-1)//2: #Числа на диагоналях
+            summa+=matrix_C[i][j]
+for i in range(1, corrected_middle-1): #Числа на третьей стороне треугольника (области 4)
+    summa+=matrix_C[i][0]
+#Если условие для подматрицы С выполняется, то меняем в подматрице В области 1 и 3 местами и формируем матрицу F
+if nch>summa:
+    shuffled_B = shuffle_symmetric(matrix_B)
+    matrix_F= create_matrix_f(matrix_E, shuffled_B, matrix_D, matrix_C)
+    print("Выполнена симметричная перемена областей 1 и 3 в матрице B местами.")
+else: #Иначе меняем подматрицы Е и С местами и формируем матрицу F
+    matrix_F = create_matrix_f(matrix_C, matrix_B, matrix_D, matrix_E)
+    print("Выполнена перемена подматриц E и C местами")
+print("Матрица F")
+printMatrix(matrix_F, N)
+F_T=[[matrix_F[j][i] for j in range(N)] for i in range(N)] #Транспонирование матрицы F
+print("Транспонированная матрица F")
+printMatrix(F_T, N)
+F_T_K=[[F_T[i][j]*K for j in range(N)] for i in range(N)] #Умножение транспонированной матрицы F на число K
+print("Умножение транспонированной матрицы F на число K")
+printMatrix(F_T_K, N)
+F_plus_A=[[matrix_A[i][j]+matrix_F[i][j] for j in range(N)] for i in range(N)] #Сложение матриц F и A
+print("Сложение матрицы F и матрицы A")
+printMatrix(F_plus_A, N)
+multiply=[[F_plus_A[i][j]*matrix_A[i][j] for j in range(N)] for i in range(N)] #Умножение результата сложения на матрицу A
+print("Умножение матрицы A на сумму матриц A и F")
+printMatrix(multiply, N)
+subtract=[[multiply[i][j]-F_T_K[i][j] for j in range(N)] for i in range(N)] #Разность A*(F+A)-K*FT и окончательный результат 
+print("Разность между A*(F+A) и K*FT, где FT - транспонированная матрица F")
+printMatrix(subtract, N)
+print("\nКонец")
