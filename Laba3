@@ -43,7 +43,7 @@ def create_matrix_f(first, second, third, fourth):
 def printMatrix(matrix, count): #Вывод матрицы на экран
     for i in matrix:
         for j in i:
-            print(f"{j:>4}", end='')
+            print(f"{j:>5}", end='')
         print()
 import random
 K = int(input("Введите K="))
@@ -97,7 +97,19 @@ printMatrix(F_T_K, N)
 F_plus_A=[[matrix_A[i][j]+matrix_F[i][j] for j in range(N)] for i in range(N)] #Сложение матриц F и A
 print("Сложение матрицы F и матрицы A")
 printMatrix(F_plus_A, N)
-multiply=[[F_plus_A[i][j]*matrix_A[i][j] for j in range(N)] for i in range(N)] #Умножение результата сложения на матрицу A
+multiply=[]
+k=0
+T=0
+for i in range(N): #Умножение результата сложения на матрицу A
+    row=[]
+    for j in range(N):
+        while k<N:
+            T+=matrix_A[i][k]*F_plus_A[k][j]
+            k+=1
+        row.append(T)
+        T=0
+        k=0
+    multiply.append(row) 
 print("Умножение матрицы A на сумму матриц A и F")
 printMatrix(multiply, N)
 subtract=[[multiply[i][j]-F_T_K[i][j] for j in range(N)] for i in range(N)] #Разность A*(F+A)-K*FT и окончательный результат 
